@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include <string>
 
+#include "Mutex.h"
+
 namespace mw {
 
 class TaskQueueManager {
@@ -21,6 +23,7 @@ public:
     QueueHandle_t getAddress(const std::string& name) const;
 
 private:
+    mutable Mutex mutex;
     std::unordered_map<std::string, QueueHandle_t> tasksQueue;
 };
 

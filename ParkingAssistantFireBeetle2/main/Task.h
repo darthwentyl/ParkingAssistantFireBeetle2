@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TaskQueueManager.h"
+#include "Messages.h"
 
 namespace mw {
 
@@ -18,17 +19,19 @@ public:
     Task(Task&&) = delete;
     Task& operator = (Task&&) = delete;
 
+    void loop() {
+        taskQueueManager.registerQueue(name, xQueueCreate(10, sizeof(AnyMessage)));
+        self().loop();
+        vTaskDelete(nullptr);
+    }
+
     const char* const taskName() {
         return name;
     }
 
-    void loop() {
-        self().loop();
-    }
-
 protected:
-    void registerQueue(QueueHandle_t address) {
-        taskQueueManager.registerQueue(name, address);
+    TaskQueueManager& getQueueManager() {
+        return taskQueueManager;
     }
 
 private:

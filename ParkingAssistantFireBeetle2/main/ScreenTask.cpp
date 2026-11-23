@@ -1,29 +1,34 @@
 #include <Arduino.h>
 
+#include "SerialLogger.h"
 #include "ScreenTask.h"
-#include "ScreenMsg.h"
+#include "Messages.h"
 
 namespace mw {
 
 void ScreenTask::loop() {
-    Serial.printf("%s:%u begin\n", __FUNCTION__, __LINE__);
-    QueueHandle_t queue = xQueueCreate(1, sizeof(MsgBase));
-    registerQueue(queue);
-    Serial.printf("%s:%u created\n", __FUNCTION__, __LINE__);
+    SerialLogger::log().printf("ScreenTask::%s:%d\n", __FUNCTION__, __LINE__);
+    QueueHandle_t myAddress = getQueueManager().getAddress(taskName());
+    if (myAddress == nullptr) {
+        return;
+    }
+    SerialLogger::log().printf("%s:%d\n", __FUNCTION__, __LINE__);
 
     while(true) {
-        // Serial.printf("%s:%u begin\n", __FUNCTION__, __LINE__);
-        MsgBase msg;
-        if (xQueueReceive(queue, &msg, portMAX_DELAY) == pdPASS) {
-            ScreenMsg screenData;
-            screenData.deserialize(msg);
-            Serial.printf("%s:%u color: %u\n", __FUNCTION__, __LINE__, screenData.getColor());
-            Serial.printf("%s:%u line: %u\n", __FUNCTION__, __LINE__, screenData.getLine());
-            Serial.printf("%s:%u msg: %s\n", __FUNCTION__, __LINE__, screenData.getMsg());
+        AnyMessage received;
+        SerialLogger::log().printf("%s:%d\n", __FUNCTION__, __LINE__);
+        if (xQueueReceive(myAddress, &received, portMAX_DELAY) == pdPASS) {
+            switch (received.header.id) {
+                case MsgId::SCREEN_MSG:
+                    SerialLogger::log().printf("color: %u\n", received.screen.color);
+                    SerialLogger::log().printf("line: %u\n", received.screen.line);
+                    SerialLogger::log().printf("text: %s\n", received.screen.text);
+                    break;
+                default:
+                    SerialLogger::log().printf("ScreenTask::%s wrong id: %u\n", __FUNCTION__, static_cast<uint8_t>(received.header.id));
+            }
         }
-        // Serial.printf("%s:%u end\n", __FUNCTION__, __LINE__);
     }
-    Serial.printf("%s:%u END\n", __FUNCTION__, __LINE__);
 }
 
 } // mw

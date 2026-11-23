@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Task.h"
+#include "SerialLogger.h"
 
 namespace mw {
 
@@ -36,6 +37,9 @@ bool TaskCreator<TASK_T>::create(
     const configSTACK_DEPTH_TYPE uxStackDepth,
     const UBaseType_t uxPriority,
     TaskHandle_t* pxCreatedTask) {
+
+    SerialLogger::log().printf("%s:%d\n", __FUNCTION__, __LINE__);
+
     return xTaskCreate(
         TaskCreator<TASK_T>::run,
         task.taskName(),
@@ -47,7 +51,10 @@ bool TaskCreator<TASK_T>::create(
 
 template<class TASK_T>
 void TaskCreator<TASK_T>::run(void* arg) {
-    auto* task = static_cast<TASK_T*>(arg);
+
+    SerialLogger::log().printf("%s:%d\n", __FUNCTION__, __LINE__);
+
+    auto* task = static_cast<Task<TASK_T>*>(arg);
     task->loop();
     vTaskDelete(nullptr);
 }

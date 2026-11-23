@@ -1,8 +1,9 @@
 #include "TaskCreator.h"
 #include "TaskQueueManager.h"
 
+#include "Messages.h"
 #include "ScreenTask.h"
-#include "ScreenMsg.h"
+#include "SerialLogger.h"
 
 using namespace mw;
 
@@ -12,26 +13,25 @@ static TaskCreator<ScreenTask> screenTask{"ScreenTask", taskQueueManager};
 volatile std::size_t counter = 0;
 
 void setup() {
-    Serial.begin(115200);
-    Serial.printf("%s begin\n", __FUNCTION__);
-
-    screenTask.create(2048, 1, nullptr);
-
-    Serial.printf("%s end\n", __FUNCTION__);
+    screenTask.create(4096, 1, nullptr);
 }
 
 void loop() {
-    Serial.printf("%s main begin\n", __FUNCTION__);
-    ScreenMsg msg{counter, 10, std::string{"short"}};
-    MsgBase base = msg.serialize();
-    Serial.printf("%s main: addr: %p\n", __FUNCTION__, taskQueueManager.getAddress("ScreenTask"));
+    delay(1000);
+    SerialLogger::log().printf("%s:%u\n", __FUNCTION__, __LINE__);
+    AnyMessage msg;
+    msg.screen = ScreenMsg{};
+    msg.screen.color = counter + 1;
+    msg.screen.line = counter + 2;
+    msg.screen.setText("ABCD");
+
     if (taskQueueManager.getAddress("ScreenTask") != nullptr) {
+
         xQueueSend(
             taskQueueManager.getAddress("ScreenTask"),
-            &base,
+            &msg,
             pdMS_TO_TICKS(100));
     }
-    delay(3600);
+
     ++counter;
-    Serial.printf("%s main end\n", __FUNCTION__);
 }

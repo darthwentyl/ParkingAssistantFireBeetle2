@@ -14,8 +14,6 @@ public:
     ScreenTask& operator = (ScreenTask&&) = delete;
 
     void loop();
-    QueueHandle_t getAddress() const;
-
 private:
 
 };
