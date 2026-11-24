@@ -1,14 +1,15 @@
-#pragma once
+#ifndef __TASKS_TASKCREATOR_H__
+#define __TASKS_TASKCREATOR_H__
 
-#include "Task.h"
-#include "SerialLogger.h"
+#include "src/tasks/Task.h"
+#include "src/helpers/SerialLogger.h"
 
-namespace mw {
+namespace mw { namespace tasks {
 
 template<class TASK_T>
 class TaskCreator {
 public:
-    TaskCreator(const char* const name, TaskQueueManager& taskQueueManager);
+    TaskCreator(const char* const name, TasksManager& tasksManager);
     ~TaskCreator() = default;
 
     TaskCreator(const TaskCreator&) = delete;
@@ -28,8 +29,8 @@ private:
 };
 
 template<class TASK_T>
-TaskCreator<TASK_T>::TaskCreator(const char* const name, TaskQueueManager& taskQueueManager)
-    : task{name, taskQueueManager}
+TaskCreator<TASK_T>::TaskCreator(const char* const name, TasksManager& tasksManager)
+    : task{name, tasksManager}
 {}
 
 template<class TASK_T>
@@ -38,7 +39,7 @@ bool TaskCreator<TASK_T>::create(
     const UBaseType_t uxPriority,
     TaskHandle_t* pxCreatedTask) {
 
-    SerialLogger::log().printf("%s:%d\n", __FUNCTION__, __LINE__);
+    DBG();
 
     return xTaskCreate(
         TaskCreator<TASK_T>::run,
@@ -51,13 +52,12 @@ bool TaskCreator<TASK_T>::create(
 
 template<class TASK_T>
 void TaskCreator<TASK_T>::run(void* arg) {
-
-    SerialLogger::log().printf("%s:%d\n", __FUNCTION__, __LINE__);
-
     auto* task = static_cast<Task<TASK_T>*>(arg);
+    DBG("task %s created", task->taskName());
     task->loop();
     vTaskDelete(nullptr);
 }
 
+} } // mw::tasks
 
-} // mw
+#endif // __TASKS_TASKCREATOR_H__

@@ -1,8 +1,9 @@
-#pragma once
+#ifndef __HELPERS_MUTEX_H__
+#define __HELPERS_MUTEX_H__
 
 #include "FreeRTOS.h"
 
-namespace mw {
+namespace mw { namespace helpers {
 
 class Mutex {
 public:
@@ -45,4 +46,6 @@ private:
     Mutex& mutex;
 };
 
-} // mw
+} } // mw::helpers
+
+#endif // __HELEPERS_MUTEX_H__

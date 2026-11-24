@@ -1,7 +1,6 @@
-#include "Mutex.h"
+#include "src/helpers/Mutex.h"
 
-namespace mw {
-
+namespace mw { namespace helpers {
 
 Mutex::Mutex() :
     mutex(portMUX_INITIALIZER_UNLOCKED)
@@ -43,4 +42,4 @@ MutexGuardISR::~MutexGuardISR() {
     mutex.unlock_isr();
 }
 
-} // mw
+} } // mw::helpers

@@ -3,15 +3,15 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#include "SerialLogger.h"
+#include "src/helpers/SerialLogger.h"
 
-namespace mw {
+namespace mw { namespace helpers {
 
 SerialLogger::SerialLogger() {
     Serial.begin(115200);
 }
 
-SerialLogger& SerialLogger::log() {
+SerialLogger& SerialLogger::instance() {
     static SerialLogger instance;
     return instance;
 }
@@ -29,7 +29,6 @@ void SerialLogger::printf(const char* format, ...) {
     if (n >= 0) {
         Serial.print(buffer);
     }
-
 }
 
-} // mw
+} } // mw::helpers
