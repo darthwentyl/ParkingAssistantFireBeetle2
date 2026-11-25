@@ -2,8 +2,6 @@
 
 namespace mw { namespace components {
 
-using namespace mw::helpers;
-
 constexpr const uint8_t TFT_DC = D2;
 constexpr const uint8_t TFT_CS = D6;
 constexpr const uint8_t TFT_RST = D3;
@@ -17,13 +15,7 @@ ScreenText::ScreenText()
     screen.setFont(&FreeMono12pt7b);
 }
 
-ScreenText& ScreenText::get() {
-    static ScreenText instance;
-    return instance;
-}
-
 void ScreenText::display(const char* msg, const uint8_t line, const uint16_t color) {
-    MutexGuard guard{mutex};
     const uint8_t fontPos = 19 * (line + 1);
     const uint8_t rectPos = 5 + (line * 19);
 

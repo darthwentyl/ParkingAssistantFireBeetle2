@@ -12,19 +12,15 @@ using namespace mw::helpers;
 using namespace mw::components;
 
 void ScreenTextTask::loop() {
-    DBG("");
-    QueueHandle_t myAddress = getTasksManager().getAddress(taskName());
-    if (myAddress == nullptr) {
-        return;
-    }
-    DBG("Address created");
+    DBG();
 
+    ScreenText screen{};
     while(true) {
         AnyMessage received;
-        if (xQueueReceive(myAddress, &received, portMAX_DELAY) == pdPASS) {
+        if (xQueueReceive(address(), &received, portMAX_DELAY) == pdPASS) {
             switch (received.header.id) {
                 case MsgId::SCREEN_TEXT_MSG:
-                    ScreenText::get().display(
+                    screen.display(
                         received.screenText.text,
                         received.screenText.line,
                         received.screenText.color

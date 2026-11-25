@@ -1,6 +1,8 @@
 #ifndef __TASKS_TASK_H__
 #define __TASKS_TASK_H__
 
+#include "FreeRTOS.h"
+
 #include "src/tasks/TasksManager.h"
 #include "src/messages/AnyMessage.h"
 
@@ -22,23 +24,27 @@ public:
 
 protected:
     TasksManager& getTasksManager() const;
+    QueueHandle_t address() const;
 
 private:
     TASK_T& self();
 
     TasksManager& tasksManager;
     const char* const name;
+    QueueHandle_t myAddress;
 };
 
 template<class TASK_T>
 Task<TASK_T>::Task(const char* const name, TasksManager& tasksManager)
     : name{name}
     , tasksManager{tasksManager}
+    , myAddress{nullptr}
 {}
 
 template<class TASK_T>
 void Task<TASK_T>::loop() {
-    tasksManager.registerAddress(name, xQueueCreate(5, sizeof(messages::AnyMessage)));
+    myAddress = xQueueCreate(5, sizeof(messages::AnyMessage));
+    tasksManager.registerAddress(name, myAddress);
     self().loop();
     vTaskDelete(nullptr);
 }
@@ -51,6 +57,11 @@ const char* const Task<TASK_T>::taskName() const {
 template<class TASK_T>
 TasksManager& Task<TASK_T>::getTasksManager() const {
     return tasksManager;
+}
+
+template<class TASK_T>
+QueueHandle_t Task<TASK_T>::address() const {
+    return myAddress;
 }
 
 template<class TASK_T>
