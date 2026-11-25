@@ -2,6 +2,7 @@
 #define __TASKS_CAMERATASK_H__
 
 #include "src/tasks/Task.h"
+#include <esp_camera.h>
 
 namespace mw { namespace tasks {
 
@@ -15,6 +16,9 @@ public:
     CameraTask& operator = (CameraTask&&) = delete;
 
     void loop();
+
+private:
+    void sendInfoToScreen(const camera_fb_t* frame);
 };
 
 } } // mw::tasks
