@@ -3,6 +3,7 @@
 #include "src/tasks/TaskCreator.h"
 #include "src/tasks/TasksManager.h"
 #include "src/tasks/ScreenTextTask.h"
+#include "src/tasks/CameraTask.h"
 #include "src/tasks/TaskNameDef.h"
 #include "src/messages/AnyMessage.h"
 #include "src/helpers/SerialLogger.h"
@@ -14,11 +15,13 @@ using namespace mw::helpers;
 
 static TasksManager tasksManager;
 static TaskCreator<ScreenTextTask> screenTextTask{SCREEN_TEXT_TASK_NAME, tasksManager};
+static TaskCreator<CameraTask> cameraTask{CAMERA_TASK_NAME, tasksManager};
 
 volatile std::size_t counter = 0;
 
 void setup() {
     screenTextTask.create(4096, 1, nullptr);
+    cameraTask.create(4096, 1, nullptr);
 }
 
 void loop() {

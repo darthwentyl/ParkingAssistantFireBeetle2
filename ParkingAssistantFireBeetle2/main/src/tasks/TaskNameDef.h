@@ -2,5 +2,6 @@
 #define __TASKS_TASKNAMEDEF_H__
 
 static constexpr char SCREEN_TEXT_TASK_NAME[] = "ScreenTextTask";
+static constexpr char CAMERA_TASK_NAME[] = "CameraTask";
 
 #endif // __TASKS_TASKNAMEDEF_H__
