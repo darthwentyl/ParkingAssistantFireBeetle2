@@ -18,7 +18,7 @@ public:
     void loop();
 
 private:
-    void sendInfoToScreen(const camera_fb_t* frame);
+    void sendStatusToScreen(const char* text, const uint16_t color);
 };
 
 } } // mw::tasks

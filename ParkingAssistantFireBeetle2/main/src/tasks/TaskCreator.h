@@ -39,8 +39,6 @@ bool TaskCreator<TASK_T>::create(
     const UBaseType_t uxPriority,
     TaskHandle_t* pxCreatedTask) {
 
-    DBG();
-
     return xTaskCreate(
         TaskCreator<TASK_T>::run,
         task.taskName(),
@@ -53,7 +51,6 @@ bool TaskCreator<TASK_T>::create(
 template<class TASK_T>
 void TaskCreator<TASK_T>::run(void* arg) {
     auto* task = static_cast<Task<TASK_T>*>(arg);
-    DBG("task %s created", task->taskName());
     task->loop();
     vTaskDelete(nullptr);
 }

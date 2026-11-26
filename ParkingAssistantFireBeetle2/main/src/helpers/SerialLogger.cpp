@@ -7,13 +7,19 @@
 
 namespace mw { namespace helpers {
 
-SerialLogger::SerialLogger() {
-    Serial.begin(115200);
-}
-
 SerialLogger& SerialLogger::instance() {
     static SerialLogger instance;
     return instance;
+}
+
+SerialLogger::SerialLogger()
+    : mutex{}
+{}
+
+void SerialLogger::begin() {
+    MutexGuard guard{mutex};
+    Serial.begin(115200);
+    Serial.println("Serial configured");
 }
 
 void SerialLogger::printf(const char* format, ...) {
@@ -27,7 +33,7 @@ void SerialLogger::printf(const char* format, ...) {
     va_end(args);
 
     if (n >= 0) {
-        Serial.print(buffer);
+        Serial.println(buffer);
     }
 }
 

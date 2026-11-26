@@ -2,44 +2,31 @@
 
 namespace mw { namespace helpers {
 
-Mutex::Mutex() :
-    mutex(portMUX_INITIALIZER_UNLOCKED)
+Mutex::Mutex()
+    : mutex{xSemaphoreCreateMutex()}
 {}
 
 void Mutex::lock() {
-    portENTER_CRITICAL(&mutex);
+    if (mutex == nullptr) {
+        mutex = xSemaphoreCreateMutex();
+    }
+    xSemaphoreTake(mutex, portMAX_DELAY) == pdTRUE;
 }
 
 void Mutex::unlock() {
-    portEXIT_CRITICAL(&mutex);
+    if (mutex != nullptr) {
+        xSemaphoreGive(mutex);
+    }
 }
 
-void Mutex::lock_isr() {
-    portENTER_CRITICAL_ISR(&mutex);
-}
-
-void Mutex::unlock_isr() {
-    portEXIT_CRITICAL_ISR(&mutex);
-}
-
-MutexGuard::MutexGuard(Mutex& mutex_) :
-    mutex{mutex_}
+MutexGuard::MutexGuard(Mutex& mutex_)
+    : mutex{mutex_}
 {
     mutex.lock();
 }
 
 MutexGuard::~MutexGuard() {
     mutex.unlock();
-}
-
-MutexGuardISR::MutexGuardISR(Mutex& mutex_) :
-    mutex{mutex_}
-{
-    mutex.lock_isr();
-}
-
-MutexGuardISR::~MutexGuardISR() {
-    mutex.unlock_isr();
 }
 
 } } // mw::helpers

@@ -3,8 +3,6 @@
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/queue.h>
-#include <unordered_map>
-#include <string>
 
 #include "src/helpers/Mutex.h"
 
@@ -12,7 +10,7 @@ namespace mw { namespace tasks {
 
 class TasksManager {
 public:
-    TasksManager() = default;
+    TasksManager();
     ~TasksManager() = default;
 
     TasksManager(const TasksManager&) = delete;
@@ -20,12 +18,18 @@ public:
     TasksManager(TasksManager&&) = delete;
     TasksManager& operator = (TasksManager&&) = delete;
 
-    void registerAddress(const std::string& name, QueueHandle_t address);
-    QueueHandle_t getAddress(const std::string& name) const;
+    void registerAddress(const char* name, QueueHandle_t address);
+    QueueHandle_t getAddress(const char* name) const;
 
 private:
+    struct TaskItem {
+        const char* name;
+        QueueHandle_t address = nullptr;
+    };
+
     mutable helpers::Mutex mutex;
-    std::unordered_map<std::string, QueueHandle_t> addresses;
+    TaskItem tasks[2];
+
 };
 
 } } // mw::tasks

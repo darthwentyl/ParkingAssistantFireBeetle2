@@ -9,7 +9,7 @@
 #   define DBG(format, ...) \
         do { \
             mw::helpers::SerialLogger::instance().printf( \
-                "%s:%d [DBG] " format "\n", \
+                "%s:%d [DBG] " format, \
                 __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__); \
         } while(false)
 #else
@@ -19,7 +19,7 @@
 #define ERR(format, ...) \
     do { \
         mw::helpers::SerialLogger::instance().printf( \
-            "%s:%d [ERR] " format "\n", \
+            "%s:%d [ERR] " format, \
             __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__); \
     } while(false)
 
@@ -35,6 +35,7 @@ public:
     SerialLogger(SerialLogger&&) = delete;
     SerialLogger& operator = (SerialLogger&&) = delete;
 
+    void begin();
     void printf(const char* format, ...);
 private:
     SerialLogger();

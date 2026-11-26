@@ -8,14 +8,18 @@ namespace mw { namespace helpers {
 class Mutex {
 public:
     Mutex();
+    ~Mutex() = default;
+
+    Mutex(const Mutex&) = delete;
+    Mutex& operator = (const Mutex&) = delete;
+    Mutex(Mutex&&) = delete;
+    Mutex& operator = (Mutex&&) = delete;
 
     void lock();
     void unlock();
 
-    void lock_isr();
-    void unlock_isr();
 private:
-    portMUX_TYPE mutex;
+    SemaphoreHandle_t mutex;
 };
 
 class MutexGuard {
@@ -27,20 +31,6 @@ public:
     MutexGuard& operator = (const MutexGuard&) = delete;
     MutexGuard(MutexGuard&&) = delete;
     MutexGuard& operator = (MutexGuard&&) = delete;
-
-private:
-    Mutex& mutex;
-};
-
-class MutexGuardISR {
-public:
-    MutexGuardISR(Mutex& mutex_);
-    ~MutexGuardISR();
-
-    MutexGuardISR(const MutexGuardISR&) = delete;
-    MutexGuardISR& operator = (const MutexGuardISR&) = delete;
-    MutexGuardISR(MutexGuardISR&&) = delete;
-    MutexGuardISR& operator = (MutexGuardISR&&) = delete;
 
 private:
     Mutex& mutex;
